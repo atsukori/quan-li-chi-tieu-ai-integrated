@@ -84,3 +84,39 @@ Bản sao được kiểm tra toàn vẹn và lưu trong `instance/backups/`. Kh
 ## Giới hạn hiện tại
 
 Ứng dụng chưa kết nối ngân hàng hoặc ví điện tử, chưa có ứng dụng di động độc lập, chưa hỗ trợ đa tiền tệ hay nhiều đơn vị độc lập trong cùng một CSDL. Chức năng khôi phục bản sao lưu cần thực hiện thủ công.
+
+## Bàn giao ngữ cảnh cho phiên phát triển AI
+
+### Mục tiêu dự án
+
+Đây là ứng dụng web quản lý thu chi cho tập thể / tổ chức. Mục tiêu là minh bạch hóa các khoản thu chi, tách tiền cá nhân khỏi quỹ chung và ngân sách đơn vị, theo dõi hạn mức định kỳ và hỗ trợ báo cáo. Dự án dùng Python 3.11, Flask, SQLite và kiến trúc Application Factory + Blueprint; cần tiếp tục chạy trên Windows và Raspberry Pi Zero 2 W / Linux.
+
+### Trạng thái mã nguồn tại thời điểm sao chép
+
+- Mã nguồn được sao chép từ `atsukori/quan-li-chi-tieu-refresh`, branch `codex`, commit `bb057a4bf4c9111fe13cfe673e5efce81a5f746e`.
+- Ứng dụng hiện có đăng nhập và phân quyền admin/user, quản lý tài khoản và danh mục, CRUD giao dịch, import Excel có xem trước, hạn mức tuần/tháng/quý, cảnh báo, báo cáo và xuất CSV/XLSX, audit log và sao lưu SQLite.
+- Nguồn tiền hiện có `personal`, `common` và `unit`. Giữ các giá trị nghiệp vụ này khi bổ sung tính năng.
+- CSDL mặc định trong mã hiện tại là `instance/expense.db`.
+- Chưa có thành phần hoặc tính năng AI trong mã nguồn ban đầu; yêu cầu tích hợp AI là mục tiêu mới do giáo viên yêu cầu.
+- Branch `main` là bản sao snapshot của branch nguồn. Branch `codex` cũng bắt đầu từ snapshot đó; README này có thêm ghi chú bàn giao riêng cho hướng tích hợp AI.
+
+### Hướng tích hợp AI đang được cân nhắc
+
+Chưa chốt nhà cung cấp AI hay tính năng cụ thể. Các ý tưởng đã thảo luận:
+
+1. **Đọc hóa đơn/biên lai**: trích ngày, số tiền và nội dung từ ảnh để điền sẵn biểu mẫu giao dịch; gợi ý danh mục nếu đủ tin cậy. Người dùng phải xem lại và xác nhận trước khi lưu. Hướng này đã được nêu trong tài liệu dự án.
+2. **Tóm tắt báo cáo bằng AI**: dựa trên bộ lọc báo cáo hiện tại để giải thích xu hướng thu chi, biến động bất thường và nguy cơ vượt hạn mức.
+3. **Gợi ý danh mục giao dịch**: đề xuất danh mục theo nội dung ghi chú, người dùng tự xác nhận.
+
+Nhận diện hóa đơn là hướng demo được đề xuất vì gắn với quy trình nhập giao dịch và đã có trong định hướng tài liệu, nhưng đây mới là đề xuất, chưa phải quyết định của người dùng. Hãy thống nhất phạm vi và cách chạy (dịch vụ trực tuyến hay mô hình xử lý tại máy) trước khi triển khai tính năng đó.
+
+### Ràng buộc khi phát triển
+
+- Tài liệu trong `docs/` là tài liệu tham khảo do người dùng tự quản lý: **không sửa file nào trong `docs/`** nếu chưa được yêu cầu rõ.
+- Một số tài liệu có thể còn tham chiếu tên database cũ `family_expenses.db` hoặc branch `chatgpt-work`; kiểm tra mã nguồn hiện hành và branch thực tế trước khi dựa vào các chi tiết này.
+- Giữ nguyên cấu trúc App Factory + Blueprint, ưu tiên thay đổi nhỏ, không thêm dependency nếu chưa cần.
+- Giao diện hiện phục vụ offline sau khi cài dependencies. Tích hợp AI qua API sẽ cần Internet, khóa API và cân nhắc quyền riêng tư dữ liệu tài chính; nếu có thể, gửi dữ liệu tối thiểu/tổng hợp.
+- Raspberry Pi Zero 2 W có tài nguyên hạn chế. Đừng giả định mô hình AI lớn có thể chạy ổn định tại máy.
+- AI chỉ nên tạo gợi ý/phân tích. Không tự động ghi hoặc sửa giao dịch, không để kết quả AI thay thế kiểm tra số tiền, ngày, danh mục và quyền hạn hiện có.
+- Làm việc trong repo mới này theo branch `codex`; branch nguồn `codex` của repo `quan-li-chi-tieu-refresh` cần được giữ độc lập.
+
